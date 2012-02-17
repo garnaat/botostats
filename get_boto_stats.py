@@ -5,10 +5,14 @@ import datetime
 import os
 import re
 
-stats_file = 'boto_stats.json'
 version_regex = re.compile('boto-(?P<version>[0-9a-z\.]*?).tar.gz')
 
 def get_crate_stats():
+    """
+    Pull download stats for all versions on crate.io.
+    Return a dictionary where keys are version strings and
+    values are download counts.
+    """
     stats = {}
     base_url = 'http://crate.io'
     html = urllib.urlopen(base_url+'/packages/boto/').read()
@@ -31,6 +35,11 @@ def get_crate_stats():
     return stats
 
 def get_google_stats():
+    """
+    Pull download stats for all versions on Google code.
+    Return a dictionary where keys are version strings and
+    values are download counts.
+    """
     stats = {}
     url = 'http://code.google.com/p/boto/downloads/list'
     html = urllib.urlopen(url).read()
@@ -47,6 +56,11 @@ def get_google_stats():
     return stats
 
 def get_github_stats():
+    """
+    Pull download stats for all versions in github downloads.
+    Return a dictionary where keys are version strings and
+    values are download counts.
+    """
     stats = {}
     url = 'https://api.github.com/repos/boto/boto/downloads'
     json_data = urllib.urlopen(url).read()
