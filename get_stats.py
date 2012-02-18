@@ -4,6 +4,7 @@ import json
 import datetime
 import os
 import re
+import sys
 
 version_regex = re.compile('boto-(?P<version>[0-9a-z\.]*?).tar.gz')
 
@@ -95,3 +96,8 @@ def main(stats_file):
     json.dump(all_stats, fp)
     fp.close()
                       
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print 'get_stats.py <path_to_json_stats_file>'
+        sys.exit(1)
+    main(sys.argv[1])
