@@ -93,11 +93,11 @@ def main(stats_file):
     daily_stats['github'] = stats
     all_stats[timestamp] = daily_stats
     fp = open(stats_file, 'w')
-    json.dump(all_stats, fp)
+    json.dump(all_stats, fp, indent=4, sort_keys=True)
     fp.close()
                       
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print 'get_stats.py <path_to_json_stats_file>'
+        print 'Usage: get_stats.py <path_to_json_stats_file>'
         sys.exit(1)
     main(sys.argv[1])
