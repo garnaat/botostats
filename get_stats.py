@@ -8,6 +8,38 @@ import sys
 
 version_regex = re.compile('boto-(?P<version>[0-9a-z\.]*?).tar.gz')
 
+all_versions = [u'0.7a', u'0.5a', u'1.4a', u'1.8c', u'1.8b', u'2.0a2',
+                u'1.8d', u'2.0a1', u'2.0rc1', u'2.0b4', u'2.2.1',
+                u'1.4c', u'2.2.2', u'2.1.0', u'1.4b', u'2.0', u'1.6b',
+                u'1.6a', u'0.9d', u'1.2a', u'0.9a', u'0.9c', u'0.9b',
+                u'1.0a', u'1.8a', u'2.0b2', u'0.3a', u'0.6a', u'0.6b',
+                u'0.6c', u'1.5c', u'2.0b3', u'1.9b', u'2.0b1', u'0.4b',
+                u'0.4a', u'1.9a', u'2.1.1', u'1.7a', u'0.8b', u'0.8c',
+                u'0.8a', u'1.5d', u'0.8d', u'1.3a', u'1.1b', u'1.1c',
+                u'1.1a', u'0.2a', u'2.2.0']
+
+def get_pypi_stats():
+    """
+    Pull download stats for all versions on pypi.
+    Return a dictionary where keys are version strings and
+    values are download counts.
+    """
+    stats = {}
+    base_url = 'http://pypi.python.org/pypi?:action=display&name=boto&version='
+
+    for version in all_versions:
+        print 'processing %s' % version
+        html = urllib.urlopen(base_url+version)
+        soup = BeautifulSoup(html)
+        table = soup.findAll('table', {'class': 'list'})[0]
+        rows = table.findAll('tr')
+        data_row = rows[1]
+        tds = data_row.findAll('td')
+        downloads = tds[-1]
+        downloads = int(downloads.string.replace(',', ''))
+        stats[version] = downloads
+    return stats
+
 def get_crate_stats():
     """
     Pull download stats for all versions on crate.io.
@@ -85,7 +117,8 @@ def main(stats_file):
         all_stats = {}
 
     daily_stats = {}
-    stats = get_crate_stats()
+    #stats = get_crate_stats()
+    stats = get_pypi_stats()
     daily_stats['crate'] = stats
     stats = get_google_stats()
     daily_stats['googlecode'] = stats
