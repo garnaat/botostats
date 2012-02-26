@@ -47,7 +47,7 @@ def create_summary_script(data):
     days = data.keys()
     days.sort()
     latest = data[days[-1]]
-    pypi = latest['crate']
+    pypi = latest['pypi']
     google = latest['googlecode']
     github = latest['github']
     version_keys = pypi.keys()
@@ -82,7 +82,7 @@ def create_summary_script(data):
     s += '\n'.join(l)
     return s
 
-def create_weekly_script(data):
+def create_daily_script(data):
     data = process_stats.calculate_daily_data(data)
     dates = data.keys()
     dates.sort()
@@ -131,7 +131,7 @@ def main(data_path, html_path):
     fp.write(html_prefix)
     fp.write('\n<script type="text/javascript">\n')
     fp.write(create_summary_script(data))
-    fp.write(create_weekly_script(data))
+    fp.write(create_daily_script(data))
     fp.write('\ngoogle.setOnLoadCallback(drawSummaryTable);')
     fp.write('\ngoogle.setOnLoadCallback(drawDailyTable);')
     fp.write('\n</script>\n')

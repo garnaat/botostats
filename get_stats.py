@@ -119,7 +119,7 @@ def main(stats_file):
     daily_stats = {}
     #stats = get_crate_stats()
     stats = get_pypi_stats()
-    daily_stats['crate'] = stats
+    daily_stats['pypi'] = stats
     stats = get_google_stats()
     daily_stats['googlecode'] = stats
     stats = get_github_stats()
