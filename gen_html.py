@@ -113,6 +113,7 @@ def main(data_path):
     data = json.load(fp)
     fp.close()
     fp = open('stats.markdown', 'w')
+    fp.write('<link href="markdown.css" rel="stylesheet"></link>\n\n')
     fp.write('Boto Download Statistics\n')
     fp.write('========================\n\n')
     fp.write('[Daily Stats](#daily_stats)\n')
@@ -123,7 +124,7 @@ def main(data_path):
     fp.close()
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print 'Usage: generate_html.py <path_to_stats>'
         sys.exit(1)
     print 'Generating Markdown'
