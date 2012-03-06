@@ -28,8 +28,15 @@ html_postfix = """
   <body style="font-family: Arial;border: 0 none;">
     <h2>Total Downloads For All Releases</h2>
     <div id="summary"></div>
-    <h2>Last 7 Days For All Releases</h2>
+    <h2>Last 7 Days By Releases</h2>
+    <p>NOTE: Sometimes PyPI stops updating daily stats for a period of time.
+       In those situations, once the stats start updating again, the missing
+       days are filled in by averaging the total downloads over that period
+       of time.
+    </p>
     <div id="daily"></div>
+    <h2>Weekly Totals By Release</h2>
+    <div id="weekly"></div>
   </body>
 </html>"""
 
@@ -123,6 +130,47 @@ def create_daily_script(data):
     s += '\n'.join(l)
     return s
 
+def create_weekly_script(data):
+    data = process_stats.calculate_weekly_data(data)
+    dates = data.keys()
+    dates.sort()
+    l = []
+    l.append('  function drawWeeklyTable() {')
+    l.append('    var WeekObject = {')
+    l.append("    cols: [{id: 'release', label: 'Release', type: 'string'},")
+    for day in dates:
+        l.append("{id: '%s', label: '%s', type: 'number'}," % (day, day))
+    l.append("    ], \nrows: [")
+    s = '\n'.join(l)
+    versions = data[dates[-1]]
+    row_list = []
+    version_keys = versions.keys()
+    version_keys.sort()
+    version_keys.reverse()
+    for version in version_keys:
+        row = "{c: [{v: '%s'}, " % version
+        data_list = []
+        for day in dates:
+            data_list.append('{v: %d}' % data[day][version])
+        row += ','.join(data_list)
+        row += ']}'
+        row_list.append(row)
+    row = "{c: [{v: 'Total'}, "
+    data_list = []
+    for day in dates:
+        data_list.append('{v: %d}' % sum(data[day].values()))
+    row += ','.join(data_list)
+    row += ']}'
+    row_list.append(row)
+    s += ','.join(row_list)
+    s += ']};'
+    l = ['var data = new google.visualization.DataTable(WeekObject, 0.5);']
+    l.append("visualization = new google.visualization.Table(document.getElementById('weekly'));")
+    l.append("visualization.draw(data, {'allowHtml': true});")
+    l.append('}')
+    s += '\n'.join(l)
+    return s
+
 def main(data_path, html_path):
     fp = open(data_path)
     data = json.load(fp)
@@ -132,8 +180,10 @@ def main(data_path, html_path):
     fp.write('\n<script type="text/javascript">\n')
     fp.write(create_summary_script(data))
     fp.write(create_daily_script(data))
+    fp.write(create_weekly_script(data))
     fp.write('\ngoogle.setOnLoadCallback(drawSummaryTable);')
     fp.write('\ngoogle.setOnLoadCallback(drawDailyTable);')
+    fp.write('\ngoogle.setOnLoadCallback(drawWeeklyTable);')
     fp.write('\n</script>\n')
     fp.write(html_postfix)
     fp.close()

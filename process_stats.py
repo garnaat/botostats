@@ -1,4 +1,6 @@
 import json
+import datetime
+import copy
 
 def sum_sources(stats, dates=None):
     """
@@ -25,10 +27,11 @@ def sum_sources(stats, dates=None):
                     sums[date][version] = source_dict[version]
     return sums
 
-def calculate_daily_data(stats):
+def calculate_daily_data(stats, num_days=7):
     days = stats.keys()
     days.sort()
-    days = days[-8:]
+    if num_days is not None:
+        days = days[-(num_days+1):]
     days.reverse()
     # When bootstrapping, we won't have seven days of data yet
     num_days = len(days)
@@ -43,5 +46,27 @@ def calculate_daily_data(stats):
         daily_data[days[i].split('T')[0]] = day_data
     return daily_data
                    
-    
+def calculate_weekly_data(stats):
+    daily = calculate_daily_data(stats, None)
+    weekly_data = {}
+    days = daily.keys()
+    days.sort()
+    for i, day in enumerate(days):
+        y, m, d = map(int, day.split('-'))
+        date = datetime.date(y, m, d)
+        if date.weekday() == 1:
+            break
+    while i+7 < len(days):
+        week_name = '%s thru ' % days[i]
+        this_week = copy.copy(daily[days[i]])
+        print this_week['2.2.2']
+        i += 1
+        for i in range(i, i+6):
+            for v in this_week:
+                this_week[v] += daily[days[i]][v]
+            print this_week['2.2.2']
+        week_name += days[i]
+        weekly_data[week_name] = this_week
+    return weekly_data
+            
     
