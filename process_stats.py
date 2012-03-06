@@ -59,12 +59,10 @@ def calculate_weekly_data(stats):
     while i+7 < len(days):
         week_name = '%s thru ' % days[i]
         this_week = copy.copy(daily[days[i]])
-        print this_week['2.2.2']
         i += 1
         for i in range(i, i+6):
             for v in this_week:
                 this_week[v] += daily[days[i]][v]
-            print this_week['2.2.2']
         week_name += days[i]
         weekly_data[week_name] = this_week
     return weekly_data
