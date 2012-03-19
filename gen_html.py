@@ -65,6 +65,8 @@ def create_daily_table(data, fp):
     for version in version_keys:
         row_list = [version]
         for day in dates:
+            if version not in data[day]:
+                data[day][version] = 0
             row_list.append('%d' % data[day][version])
         fp.write(' | '.join(row_list))
         fp.write('\n')
@@ -116,7 +118,8 @@ def main(data_path):
     fp.write('Boto Download Statistics\n')
     fp.write('========================\n\n')
     fp.write('[Daily Stats](#daily_stats)\n')
-    fp.write('[Weekly Stats](#weekly_stats)\n\n')
+    fp.write('[Weekly Stats](#weekly_stats)\n')
+    fp.write('[JSON Data](http://stats.pythonboto.org/daily_stats.json)\n\n')
     create_summary_table(data, fp)
     create_daily_table(data, fp)
     create_weekly_table(data, fp)
@@ -152,3 +155,5 @@ if __name__ == '__main__':
     bucket = s3.lookup('stats.pythonboto.org')
     k = bucket.new_key('index.html')
     k.set_contents_from_filename('stats.html', policy='public-read')
+    k = bucket.new_key('daily_stats.json')
+    k.set_contents_from_filename('daily_stats.json', policy='public-read')

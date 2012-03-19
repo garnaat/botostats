@@ -42,7 +42,7 @@ def calculate_daily_data(stats, num_days=7):
         day2 = summary_stats[days[i+1]]
         day_data = {}
         for version in day1:
-            day_data[version] = day1[version] - day2[version]
+            day_data[version] = day1.get(version, 0) - day2.get(version, 0)
         daily_data[days[i].split('T')[0]] = day_data
     return daily_data
                    
@@ -57,13 +57,12 @@ def calculate_weekly_data(stats):
         if date.weekday() == 1:
             break
     while i+7 < len(days):
-        week_name = '%s thru ' % days[i]
         this_week = copy.copy(daily[days[i]])
         i += 1
         for i in range(i, i+6):
             for v in this_week:
                 this_week[v] += daily[days[i]][v]
-        week_name += days[i]
+        week_name = 'W/E  %s' % days[i]
         weekly_data[week_name] = this_week
     return weekly_data
             
