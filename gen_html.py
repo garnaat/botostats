@@ -101,6 +101,8 @@ def create_weekly_table(data, fp):
     for version in version_keys:
         row_list = [version]
         for date in dates:
+            if version not in data[date]:
+                data[date][version] = 0
             row_list.append('%d' % data[date][version])
         fp.write(' | '.join(row_list))
         fp.write('\n')
